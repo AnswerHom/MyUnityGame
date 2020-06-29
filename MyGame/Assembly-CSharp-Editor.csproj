@@ -61,10 +61,10 @@
   <ItemGroup>
     <Compile Include="Assets\MobileInput\Scripts\Editor\CrossPlatformInputInitialize.cs" />
     <Reference Include="UnityEditor.StandardEvents">
-      <HintPath>F:/UnityPro/MyGame/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
+      <HintPath>F:/UnityPro/MyGit/MyUnityGame/MyGame/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
     <Reference Include="Unity.PackageManagerUI.Editor">
-      <HintPath>F:/UnityPro/MyGame/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
+      <HintPath>F:/UnityPro/MyGit/MyUnityGame/MyGame/Library/ScriptAssemblies/Unity.PackageManagerUI.Editor.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>D:/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
