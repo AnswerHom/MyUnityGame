@@ -67,11 +67,15 @@
     <Compile Include="Assets\MobileInput\Scripts\VirtualInput.cs" />
     <Compile Include="Assets\Scripts\Base\BaseManager.cs" />
     <Compile Include="Assets\Scripts\CameraFollow.cs" />
+    <Compile Include="Assets\Scripts\Creature.cs" />
+    <Compile Include="Assets\Scripts\Enemy.cs" />
+    <Compile Include="Assets\Scripts\EnemyControl.cs" />
     <Compile Include="Assets\Scripts\Event\EventManager.cs" />
     <Compile Include="Assets\Scripts\Input\InputManager.cs" />
     <Compile Include="Assets\Scripts\Mono\MonoController.cs" />
     <Compile Include="Assets\Scripts\Mono\MonoManager.cs" />
     <Compile Include="Assets\Scripts\Music\MusicManager.cs" />
+    <Compile Include="Assets\Scripts\Player.cs" />
     <Compile Include="Assets\Scripts\PlayerControl.cs" />
     <Compile Include="Assets\Scripts\PlayerShoot.cs" />
     <Compile Include="Assets\Scripts\Pool\ObjectPool.cs" />

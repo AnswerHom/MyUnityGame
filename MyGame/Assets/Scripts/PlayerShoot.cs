@@ -11,14 +11,16 @@ public class PlayerShoot : MonoBehaviour {
     private ParticleSystem shootPart;
     private bool isMouseDown = false;
     private LineRenderer lineRender;
+    private Player player;
 
 	// Use this for initialization
-	void Start () {
-        shootLight = this.GetComponent<Light>();
+	void Awake () {
+        shootLight = GetComponent<Light>();
         shootLight.enabled = false;
-        shootPart = this.GetComponentInChildren<ParticleSystem>();
-        lineRender = this.GetComponent<LineRenderer>();
+        shootPart = GetComponentInChildren<ParticleSystem>();
+        lineRender = GetComponent<LineRenderer>();
         lineRender.enabled = false;
+        player = GetComponentInParent<Player>();
         InputManager.GetInstance();
         EventManager.GetInstance().AddEventListener<int>(EventManager.EVENT_MOUSE_DOWN, OnMouseDownEvent);
         EventManager.GetInstance().AddEventListener<int>(EventManager.EVENT_MOUSE_UP, OnMouseUpEvent);
@@ -59,6 +61,7 @@ public class PlayerShoot : MonoBehaviour {
 
     void Shoot()
     {
+        if (player.state != PlayerState.STATE_ALIVE) return;
         shootLight.enabled = true;
         //粒子特效播放
         shootPart.Play();
