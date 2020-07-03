@@ -8,13 +8,20 @@ public class CameraFollow : MonoBehaviour {
     public float smoothingSpeed;
 
 	// Use this for initialization
-	void Start () {
-		
+	void Awake () {
+        EventManager.GetInstance().AddEventListener(EventManager.EVENT_MAIN_PLAYER, OnMainPlayer);
 	}
+
+    private void OnMainPlayer()
+    {
+        target = GameObject.FindGameObjectWithTag("Player");
+    }
 	
 	// Update is called once per frame
 	void Update () {
-        Vector3 targetPos = target.transform.position + new Vector3(0, 6, -6);
-        transform.position = Vector3.Lerp(transform.position, targetPos, smoothingSpeed * Time.deltaTime);
-	}
+        if (target) {
+            Vector3 targetPos = target.transform.position + new Vector3(0, 6, -6);
+            transform.position = Vector3.Lerp(transform.position, targetPos, smoothingSpeed * Time.deltaTime);
+        }
+    }
 }

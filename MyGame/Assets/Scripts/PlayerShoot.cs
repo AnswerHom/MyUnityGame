@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerShoot : MonoBehaviour {
-    public int shootRate = 2;//1秒2发子弹
-    public float shootRange = 30;
-    private float timer = 0;
+public enum ShootType
+{
+    SHOOT_NORMAL,//单道
+    SHOOT_MUTI,//散弹
+}
 
+public class PlayerShoot : MonoBehaviour {
+    private float timer = 0;
     private Light shootLight;
     private ParticleSystem shootPart;
     private bool isMouseDown = false;
@@ -51,7 +54,7 @@ public class PlayerShoot : MonoBehaviour {
     // Update is called once per frame
     void Update () {
         timer += Time.deltaTime;
-        if(isMouseDown && (timer >= 1.0f / shootRate))
+        if(isMouseDown && (timer >= 1.0f / player.attackSpeed))
         {
             //可以发射
             timer = 0;
@@ -61,26 +64,59 @@ public class PlayerShoot : MonoBehaviour {
 
     void Shoot()
     {
-        if (player.state != PlayerState.STATE_ALIVE) return;
+        if (player.state != CreatureState.STATE_ALIVE) return;
         shootLight.enabled = true;
         //粒子特效播放
         shootPart.Play();
         lineRender.enabled = true;
+        switch (player.shootType)
+        {
+            case ShootType.SHOOT_NORMAL:
+                lineRender.positionCount = 2;
+                DrawShootLine(0, 0);
+                break;
+            case ShootType.SHOOT_MUTI:
+                int idx = 0;
+                lineRender.positionCount = 10;
+                for (int i = -2; i <= 2; i++)
+                {
+                    DrawShootLine(idx++, i * 10);
+                }
+                break;
+            default:
+                break;
+        }
+        
+        Invoke("EndShoot", 0.05f);
+    }
+    
+    /// <summary>
+    /// 绘制弹道
+    /// </summary>
+    private void DrawShootLine(int idx , float angle)
+    {
+        Vector3 tempV = Quaternion.AngleAxis(angle, transform.up) * transform.forward;
+        tempV = tempV.normalized;
         //起始位置
-        lineRender.SetPosition(0, transform.position);
+        lineRender.SetPosition(2* idx, transform.position);
         //发射射线
-        Ray ray = new Ray(transform.position,transform.forward);
+        Ray ray = new Ray(transform.position, tempV);
         RaycastHit info;
-        if(Physics.Raycast(ray,out info, shootRange))
+        if (Physics.Raycast(ray, out info, player.attackRange))
         {
             //有障碍物
-            lineRender.SetPosition(1, info.point);
-        }else
+            lineRender.SetPosition(2 * idx+1, info.point);
+            if (info.transform.tag == "Enemy")
+            {
+                Enemy obj = info.transform.GetComponent<Enemy>();
+                obj.TakeDamage(player);
+            }
+        }
+        else
         {
             //无障碍最大发射距离
-            lineRender.SetPosition(1, transform.position + transform.forward * shootRange);
+            lineRender.SetPosition(2 * idx+1, transform.position + tempV * player.attackRange);
         }
-        Invoke("EndShoot", 0.05f);
     }
 
     void EndShoot()

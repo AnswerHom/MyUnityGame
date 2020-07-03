@@ -21,6 +21,7 @@ public class InputManager : BaseManager<InputManager> {
         checkInput(KeyCode.S);
         checkInput(KeyCode.A);
         checkInput(KeyCode.D);
+        checkInput(KeyCode.Space);
         checkMouse(0);//左键
         checkMouse(1);//右键
     }

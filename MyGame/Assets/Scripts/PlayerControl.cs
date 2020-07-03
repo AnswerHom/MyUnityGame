@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerControl : MonoBehaviour {
-    /// <summary>
-    /// 移动速度
-    /// </summary>
-    public float speed = 5;
     private Rigidbody body;
     private Animator anim;
     private int maskIndex;
@@ -20,15 +16,27 @@ public class PlayerControl : MonoBehaviour {
         anim = GetComponent<Animator>();
         maskIndex = LayerMask.GetMask("Ground");
         player = GetComponent<Player>();
+        EventManager.GetInstance().AddEventListener<KeyCode>(EventManager.EVENT_KEY_DOWN, OnKeyDown);
+    }
+
+    private void OnKeyDown(KeyCode key)
+    {
+        if(key == KeyCode.Space)
+        {
+            if (player.shootType == ShootType.SHOOT_NORMAL)
+                player.shootType = ShootType.SHOOT_MUTI;
+            else
+                player.shootType = ShootType.SHOOT_NORMAL;
+        }
     }
 
     // Update is called once per frame
     void Update () {
-        if(player.state == PlayerState.STATE_ALIVE) {
+        if(player.state == CreatureState.STATE_ALIVE) {
             //移动
             float x = Input.GetAxis("Horizontal");
             float y = Input.GetAxis("Vertical");
-            this.body.MovePosition(transform.position + new Vector3(x, 0, y) * speed * Time.deltaTime);
+            body.MovePosition(transform.position + new Vector3(x, 0, y) * player.speed * Time.deltaTime);
 
             //旋转
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -48,7 +56,7 @@ public class PlayerControl : MonoBehaviour {
             {
                 anim.SetBool("isMove", false);
             }
-        }else if(player.state == PlayerState.STATE_DEAD)
+        }else if(player.state == CreatureState.STATE_DEAD)
         {
             anim.SetBool("isDeath", true);
         }

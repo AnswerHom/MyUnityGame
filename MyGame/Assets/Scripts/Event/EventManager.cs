@@ -35,6 +35,7 @@ public class EventManager : BaseManager<EventManager>
     public static string EVENT_KEY_UP = "按键抬起";
     public static string EVENT_MOUSE_DOWN = "鼠标按下";
     public static string EVENT_MOUSE_UP = "鼠标抬起";
+    public static string EVENT_MAIN_PLAYER = "主玩家初始化";
 
     private Dictionary<string, IEventInfo> eventDic;
 

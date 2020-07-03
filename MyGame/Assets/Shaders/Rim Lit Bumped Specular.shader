@@ -27,7 +27,7 @@
       float _RimPower;
       void surf (Input IN, inout SurfaceOutput o) {
   		  fixed4 tex = tex2D(_MainTex, IN.uv_MainTex);  
-          o.Albedo = tex2D (_MainTex, IN.uv_MainTex).rgb;
+          o.Albedo = tex2D (_MainTex, IN.uv_MainTex).rgb * _Color.rgb;
           o.Gloss = tex.a;
           o.Alpha = tex.a * _Color.a;
           o.Specular = _Shininess;
