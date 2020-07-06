@@ -72,6 +72,7 @@ public class Player : Creature {
                 buff.AttachBuff(this);
             }
         }
+        EventManager.GetInstance().EventTrigger<ShootType>(EventManager.EVENT_MAIN_PLAYER_CHANGE_WEAPON, type);
     }
 
     protected override void OnAddBuff(Buff buff)

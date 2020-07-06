@@ -13,8 +13,21 @@ public enum EnemyType
     ENEMY_HELLEPHANT
 }
 
-public class GameMgr : MonoBehaviour
+public enum GameState
 {
+    /// <summary>
+    /// 游戏开始
+    /// </summary>
+    GAME_STATE_START,
+    /// <summary>
+    /// 游戏结束
+    /// </summary>
+    GAME_STATE_END
+}
+
+public class GameMgr : BaseManager<GameMgr>
+{
+    public GameState state;
     private Vector3 bornPoint1;
     private Vector3 bornPoint2;
     private float timer = 0;
@@ -28,24 +41,39 @@ public class GameMgr : MonoBehaviour
     /// 黄电池BUFF
     /// </summary>
     private YellowBattery yellow = null;
+    /// <summary>
+    /// 主玩家
+    /// </summary>
     private Player player;
+    public Player GetMainPlayer()
+    {
+        return player;
+    }
     private GameObject sceneCanvas;
 
-    void Awake()
+    public GameMgr()
     {
         bornPoint1 = GameObject.Find("BornPoint1").transform.position;
         bornPoint2 = GameObject.Find("BornPoint2").transform.position;
         enemyList = new List<Enemy>();
         sceneCanvas = GameObject.Find("SceneCanvas");
+        MonoManager.GetInstance().AddUpdateListener(Update);
+        state = GameState.GAME_STATE_END;
     }
 
-    // Use this for initialization
-    void Start()
+    /// <summary>
+    /// 游戏开始
+    /// </summary>
+    public void StartGame()
     {
+        Debug.Log("=======> 游戏开始");
+        if (state == GameState.GAME_STATE_START) return;
         //初始化玩家
         ObjectPool.GetInstance().outPool("Prefabs/Player", OnMainPlayer);
         timer = Random.Range(0.2f, 1.5f);
         itemTimer = 1;
+        state = GameState.GAME_STATE_START;
+        UIManager.GetInstance().ShowPanel<HudPanel>("PanelHud", UILayer.MIDDLE);
     }
 
     private void OnMainPlayer(GameObject playerObj)
@@ -56,9 +84,51 @@ public class GameMgr : MonoBehaviour
         EventManager.GetInstance().EventTrigger(EventManager.EVENT_MAIN_PLAYER);
     }
 
+    /// <summary>
+    /// 游戏结束
+    /// </summary>
+    public void EndGame()
+    {
+        Debug.Log("=======> 游戏结束");
+        if (state == GameState.GAME_STATE_END) return;
+        state = GameState.GAME_STATE_END;
+        //回收主玩家
+        ObjectPool.GetInstance().intoPool(player.gameObject);
+        //回收敌人
+        for (int i = 0; i < enemyList.Count; i++)
+        {
+            Enemy enemy = enemyList[i];
+            if (enemy)
+            {
+                ObjectPool.GetInstance().intoPool(enemy.gameObject);
+                enemyList.Remove(enemy);
+                i--;
+            }
+        }
+        //回收物品
+        if (blue != null)
+        {
+            ObjectPool.GetInstance().intoPool(blue.gameObject);
+            blue = null;
+        }
+        if (yellow != null)
+        {
+            ObjectPool.GetInstance().intoPool(yellow.gameObject);
+            yellow = null;
+        }
+        UIManager.GetInstance().HidePanel("PanelHud");
+        UIManager.GetInstance().ShowPanel<StartPanel>("PanelStart",UILayer.MIDDLE);
+    }
+
     // Update is called once per frame
     void Update()
     {
+        if (state == GameState.GAME_STATE_END) return;
+        //检查主玩家状态
+        if (player != null && player.state == CreatureState.STATE_RELIFE)
+        {
+            EndGame();
+        }
         //检查死亡的敌人，进行回收
         for (int i = 0; i < enemyList.Count; i++)
         {

@@ -92,6 +92,16 @@ public class Buff  {
     {
         state = BuffState.STATE_DISABLE;
     }
+
+    public virtual string GetBuffName()
+    {
+        return "";
+    }
+
+    public string GetRemainTime()
+    {
+        return Mathf.Ceil(timer) + "";
+    }
 }
 
 
@@ -117,6 +127,11 @@ public class SpeedUpBuff:Buff
         base.UnattachBuff(creature);
         creature.speed = creature.maxSpeed;
     }
+
+    public override string GetBuffName()
+    {
+        return "疾行状态(2倍移速)";
+    }
 }
 
 /// <summary>
@@ -133,12 +148,17 @@ public class AttackUpBuff:Buff
     public override void AttachBuff(Creature creature)
     {
         base.AttachBuff(creature);
-        creature.attack = 2 * creature.maxAttack;
+        creature.attack = 3 * creature.maxAttack;
     }
 
     public override void UnattachBuff(Creature creature)
     {
         base.UnattachBuff(creature);
         creature.attack = creature.maxAttack;
+    }
+
+    public override string GetBuffName()
+    {
+        return "疯狂状态(3倍攻击)";
     }
 }

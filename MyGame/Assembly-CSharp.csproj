@@ -75,6 +75,7 @@
     <Compile Include="Assets\Scripts\Event\EventManager.cs" />
     <Compile Include="Assets\Scripts\FollowTarget.cs" />
     <Compile Include="Assets\Scripts\GameMgr.cs" />
+    <Compile Include="Assets\Scripts\GameStart.cs" />
     <Compile Include="Assets\Scripts\Input\InputManager.cs" />
     <Compile Include="Assets\Scripts\Mono\MonoController.cs" />
     <Compile Include="Assets\Scripts\Mono\MonoManager.cs" />
@@ -86,7 +87,9 @@
     <Compile Include="Assets\Scripts\Res\ResManager.cs" />
     <Compile Include="Assets\Scripts\Scene\ScenesManager.cs" />
     <Compile Include="Assets\Scripts\SceneItem.cs" />
+    <Compile Include="Assets\Scripts\StartPanel.cs" />
     <Compile Include="Assets\Scripts\UI\BasePanel.cs" />
+    <Compile Include="Assets\Scripts\UI\HudPanel.cs" />
     <Compile Include="Assets\Scripts\UI\LoginPanel.cs" />
     <Compile Include="Assets\Scripts\UI\UIManager.cs" />
     <Compile Include="Assets\Scripts\YellowBattery.cs" />

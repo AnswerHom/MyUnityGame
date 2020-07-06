@@ -10,6 +10,7 @@ public class PlayerControl : MonoBehaviour {
     /// 玩家状态类
     /// </summary>
     private Player player;
+    private float timer;
 
     void Start () {
         body = GetComponent<Rigidbody>();
@@ -33,6 +34,7 @@ public class PlayerControl : MonoBehaviour {
     // Update is called once per frame
     void Update () {
         if(player.state == CreatureState.STATE_ALIVE) {
+            timer = 2;
             //移动
             float x = Input.GetAxis("Horizontal");
             float y = Input.GetAxis("Vertical");
@@ -59,6 +61,11 @@ public class PlayerControl : MonoBehaviour {
         }else if(player.state == CreatureState.STATE_DEAD)
         {
             anim.SetBool("isDeath", true);
+            timer -= Time.deltaTime;
+            if (timer <= 0)
+            {
+                player.state = CreatureState.STATE_RELIFE;
+            }
         }
     }
 }

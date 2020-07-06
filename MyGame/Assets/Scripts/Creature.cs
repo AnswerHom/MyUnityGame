@@ -89,7 +89,7 @@ public class Creature : MonoBehaviour {
     /// <summary>
     /// BUFF
     /// </summary>
-    protected List<Buff> buffList;
+    public List<Buff> buffList;
 
     protected virtual void Awake()
     {
