@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : Creature {
     /// <summary>
@@ -13,9 +14,15 @@ public class Player : Creature {
         set { ChangeShootType(value); }
     }
 
+    private TrailRenderer trail;
+
     // Use this for initialization
-    void Awake () {
+    protected override void Awake () {
+        base.Awake();
         render = transform.Find("Player").GetComponent<SkinnedMeshRenderer>();
+        slider = transform.Find("Canvas/Slider").GetComponent<Slider>();
+        trail = transform.Find("Trail").GetComponent<TrailRenderer>();
+        trail.enabled = false;
     }
 
     protected override void Start()
@@ -44,17 +51,44 @@ public class Player : Creature {
         switch (type)
         {
             case ShootType.SHOOT_NORMAL://单道距离一般 攻击高 攻速快
-                attack = 20;
+                maxAttack = attack = 20;
                 attackSpeed = 6;
                 attackRange = 10;
                 break;
             case ShootType.SHOOT_MUTI://散弹 距离短，攻击高，攻速慢
-                attack = 50;
+                maxAttack = attack = 50;
                 attackSpeed = 1;
                 attackRange = 5;
                 break;
             default:
                 break;
+        }
+        //BUFF应用
+        for (int i = 0; i < buffList.Count; i++)
+        {
+            Buff buff = buffList[i];
+            if(buff !=null && buff.state == BuffState.STATE_ENABLE)
+            {
+                buff.AttachBuff(this);
+            }
+        }
+    }
+
+    protected override void OnAddBuff(Buff buff)
+    {
+        base.OnAddBuff(buff);
+        if(buff.type == BuffType.BUFF_SPEED_UP)
+        {
+            trail.enabled = true;
+        }
+    }
+
+    protected override void OnRemoveBuff(Buff buff)
+    {
+        base.OnRemoveBuff(buff);
+        if (buff.type == BuffType.BUFF_SPEED_UP)
+        {
+            trail.enabled = false;
         }
     }
 }

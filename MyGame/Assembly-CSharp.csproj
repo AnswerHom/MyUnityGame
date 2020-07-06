@@ -66,6 +66,8 @@
     <Compile Include="Assets\MobileInput\Scripts\PlatformSpecific\StandaloneInput.cs" />
     <Compile Include="Assets\MobileInput\Scripts\VirtualInput.cs" />
     <Compile Include="Assets\Scripts\Base\BaseManager.cs" />
+    <Compile Include="Assets\Scripts\BlueBattery.cs" />
+    <Compile Include="Assets\Scripts\Buff.cs" />
     <Compile Include="Assets\Scripts\CameraFollow.cs" />
     <Compile Include="Assets\Scripts\Creature.cs" />
     <Compile Include="Assets\Scripts\Enemy.cs" />
@@ -83,9 +85,11 @@
     <Compile Include="Assets\Scripts\Pool\ObjectPool.cs" />
     <Compile Include="Assets\Scripts\Res\ResManager.cs" />
     <Compile Include="Assets\Scripts\Scene\ScenesManager.cs" />
+    <Compile Include="Assets\Scripts\SceneItem.cs" />
     <Compile Include="Assets\Scripts\UI\BasePanel.cs" />
     <Compile Include="Assets\Scripts\UI\LoginPanel.cs" />
     <Compile Include="Assets\Scripts\UI\UIManager.cs" />
+    <Compile Include="Assets\Scripts\YellowBattery.cs" />
     <Compile Include="Assets\Scripts\ZomControl.cs" />
     <None Include="Assets\Shaders\Rim Lit Bumped Specular.shader" />
     <None Include="Assets\Fonts\LuckiestGuy\LICENSE.txt" />

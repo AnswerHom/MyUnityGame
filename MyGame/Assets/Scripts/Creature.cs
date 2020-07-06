@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum CreatureState
 {
@@ -81,6 +82,20 @@ public class Creature : MonoBehaviour {
     /// </summary>
     private float colorSpeed = 5;
 
+    /// <summary>
+    /// 血条
+    /// </summary>
+    protected Slider slider;
+    /// <summary>
+    /// BUFF
+    /// </summary>
+    protected List<Buff> buffList;
+
+    protected virtual void Awake()
+    {
+        buffList = new List<Buff>();
+    }
+
     // Use this for initialization
     protected virtual void Start () {
         state = CreatureState.STATE_ALIVE;
@@ -97,9 +112,32 @@ public class Creature : MonoBehaviour {
             if(hp > 0)
             {
                 state = CreatureState.STATE_ALIVE;
-            }else
+                if (slider)
+                {
+                    slider.transform.rotation = Quaternion.LookRotation(transform.position - Camera.main.transform.position);
+                }
+                //BUFF检测
+                for (int i = 0; i < buffList.Count; i++)
+                {
+                    Buff buff = buffList[i];
+                    if (buff == null) continue;
+                    buff.Update();
+                    if(buff.state == BuffState.STATE_DISABLE)
+                    {
+                        buffList.Remove(buff);
+                        OnRemoveBuff(buff);
+                        i--;
+                    }
+                }
+            }
+            else
             {
                 state = CreatureState.STATE_DEAD;
+                if (slider)
+                {
+                    slider.gameObject.SetActive(false);
+                }
+                buffList.Clear();
             }
         }
     }
@@ -112,7 +150,65 @@ public class Creature : MonoBehaviour {
             //受伤变红
             render.materials[0].color = Color.red;
         }
+        if (slider)
+        {
+            slider.value = hp / maxHp;
+        }
     }
+
+    /// <summary>
+    /// 增加BUFF
+    /// </summary>
+    /// <param name="buff"></param>
+    public virtual void AddBuff(BuffType type)
+    {
+        Buff buff = null;
+        for (int i = 0; i < buffList.Count; i++)
+        {
+            Buff temp = buffList[i];
+            if(temp.type == type)
+            {
+                buff = temp;
+                break;
+            }
+        }
+        if (buff != null)
+        {
+            //刷新BUFF时间即可
+            buff.RefreshBuff();
+        }else {
+            //新加BUFF
+            switch (type)
+            {
+                case BuffType.BUFF_SPEED_UP:
+                    buff = new SpeedUpBuff();
+                    break;
+                case BuffType.BUFF_ATTACK_UP:
+                    buff = new AttackUpBuff();
+                    break;
+                default:
+                    break;
+            }
+            if (buff != null)
+            {
+                buff.AttachBuff(this);
+                buff.RefreshBuff();
+                buffList.Add(buff);
+                OnAddBuff(buff);
+            }
+        }
+    }
+
+    protected virtual void OnAddBuff(Buff buff)
+    {
+
+    }
+
+    protected virtual void OnRemoveBuff(Buff buff)
+    {
+
+    }
+
 
     /// <summary>
     /// 对象池出池初始化
@@ -125,5 +221,11 @@ public class Creature : MonoBehaviour {
         attack = maxAttack;
         speed = maxSpeed;
         defence = maxDefence;
+        buffList.Clear();
+        if (slider)
+        {
+            slider.gameObject.SetActive(true);
+            slider.value = hp / maxHp;
+        }
     }
 }

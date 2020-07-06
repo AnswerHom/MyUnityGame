@@ -13,32 +13,39 @@ public enum EnemyType
     ENEMY_HELLEPHANT
 }
 
-public class GameMgr : MonoBehaviour {
+public class GameMgr : MonoBehaviour
+{
     private Vector3 bornPoint1;
     private Vector3 bornPoint2;
     private float timer = 0;
+    private float itemTimer = 0;
     private List<Enemy> enemyList;
-    private Player player;
     /// <summary>
-    /// 血条
+    /// 蓝电池BUFF
     /// </summary>
-    private List<Scrollbar> barList;
-    private GameObject sceneCanvas; 
+    private BlueBattery blue = null;
+    /// <summary>
+    /// 黄电池BUFF
+    /// </summary>
+    private YellowBattery yellow = null;
+    private Player player;
+    private GameObject sceneCanvas;
 
     void Awake()
     {
         bornPoint1 = GameObject.Find("BornPoint1").transform.position;
         bornPoint2 = GameObject.Find("BornPoint2").transform.position;
         enemyList = new List<Enemy>();
-        barList = new List<Scrollbar>();
         sceneCanvas = GameObject.Find("SceneCanvas");
     }
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
         //初始化玩家
         ObjectPool.GetInstance().outPool("Prefabs/Player", OnMainPlayer);
         timer = Random.Range(0.2f, 1.5f);
+        itemTimer = 1;
     }
 
     private void OnMainPlayer(GameObject playerObj)
@@ -48,9 +55,10 @@ public class GameMgr : MonoBehaviour {
         player.init();
         EventManager.GetInstance().EventTrigger(EventManager.EVENT_MAIN_PLAYER);
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update()
+    {
         //检查死亡的敌人，进行回收
         for (int i = 0; i < enemyList.Count; i++)
         {
@@ -62,30 +70,67 @@ public class GameMgr : MonoBehaviour {
                 i--;
             }
         }
+        //检查无效的物品
+        if(blue && blue.state == SceneItemState.STATE_INACTIVE)
+        {
+            ObjectPool.GetInstance().intoPool(blue.gameObject);
+            blue = null;
+        }
+        if (yellow && yellow.state == SceneItemState.STATE_INACTIVE)
+        {
+            ObjectPool.GetInstance().intoPool(yellow.gameObject);
+            yellow = null;
+        }
+        //敌人刷新
         timer -= Time.deltaTime;
-        if(timer <= 0)
+        if (timer <= 0)
         {
             timer = Random.Range(1f, 5f);
             RandomEnemy();
         }
+        //道具刷新
+        itemTimer -= Time.deltaTime;
+        if(itemTimer <= 0)
+        {
+            itemTimer = Random.Range(5f, 10f);
+            RandomSceneItem();
+        }
     }
 
-    private void RandomEnemy(){
+    private void RandomEnemy()
+    {
         EnemyType type = 0;
         int randomNum = Random.Range(0, 100);
-        if(randomNum >= 0 && randomNum < 50)
+        if (randomNum >= 0 && randomNum < 50)
         {
             type = EnemyType.ENEMY_BEAR;
         }
-        else if(randomNum >= 50 && randomNum < 80)
+        else if (randomNum >= 50 && randomNum < 80)
         {
             type = EnemyType.ENEMY_BUNNY;
         }
-        else if(randomNum >= 80 && randomNum <= 100)
+        else if (randomNum >= 80 && randomNum <= 100)
         {
             type = EnemyType.ENEMY_HELLEPHANT;
         }
         CreateEnemy(type);
+    }
+
+    private void RandomSceneItem()
+    {
+        BuffType type = BuffType.BUFF_ATTACK_UP;
+        int randomNum = Random.Range(0, 100);
+        if (randomNum >= 0 && randomNum < 50)
+        {
+            type = BuffType.BUFF_ATTACK_UP;
+            if (yellow != null) return;
+        }
+        else if (randomNum >= 50 && randomNum <= 100)
+        {
+            type = BuffType.BUFF_SPEED_UP;
+            if (blue != null) return;
+        }
+        CreateSceneItem(type);
     }
 
     private void CreateEnemy(EnemyType type)
@@ -110,10 +155,11 @@ public class GameMgr : MonoBehaviour {
         {
             int random = Random.Range(0, 10);
             Vector3 bornV = Vector3.zero;
-            if(random >= 0 && random < 5)
+            if (random >= 0 && random < 5)
             {
                 bornV = bornPoint1;
-            }else
+            }
+            else
             {
                 bornV = bornPoint2;
             }
@@ -121,11 +167,45 @@ public class GameMgr : MonoBehaviour {
             Enemy enemy = obj.GetComponent<Enemy>();
             enemy.init();
             enemyList.Add(enemy);
-            GameObject bar = ResManager.GetInstance().LoadRes<GameObject>("Prefabs/HpBar");
-            bar.transform.SetParent(sceneCanvas.transform);
-            bar.transform.localScale = Vector3.one;
-            FollowTarget ft = bar.GetComponent<FollowTarget>();
-            ft.SetTarget(obj.transform);
+        });
+    }
+
+
+    private void CreateSceneItem(BuffType type)
+    {
+        string path = "";
+        Vector3 pos = new Vector3();
+        switch (type)
+        {
+            case BuffType.BUFF_SPEED_UP:
+                path = "Prefabs/Battery_blue";
+                pos.x = -6f;
+                pos.y = 0.5f;
+                pos.z = 5.5f;
+                break;
+            case BuffType.BUFF_ATTACK_UP:
+                path = "Prefabs/Battery_yellow";
+                pos.x = -4f;
+                pos.y = 0.5f;
+                pos.z = -10f;
+                break;
+            default:
+                break;
+        }
+        ObjectPool.GetInstance().outPool(path, (GameObject obj) =>
+        {
+            obj.transform.position = pos;
+            SceneItem item = obj.GetComponent<SceneItem>();
+            item.init();
+            switch (type)
+            {
+                case BuffType.BUFF_SPEED_UP:
+                    blue = item as BlueBattery;
+                    break;
+                case BuffType.BUFF_ATTACK_UP:
+                    yellow = item as YellowBattery;
+                    break;
+            }
         });
     }
 }
