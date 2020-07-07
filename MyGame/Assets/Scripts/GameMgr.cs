@@ -32,6 +32,11 @@ public class GameMgr : BaseManager<GameMgr>
     private Vector3 bornPoint2;
     private float timer = 0;
     private float itemTimer = 0;
+    /// <summary>
+    /// Boss来袭倒计时
+    /// </summary>
+    private float bossTimer = 0;
+    public List<SceneItem> sceneItemList;
     private List<Enemy> enemyList;
     /// <summary>
     /// 蓝电池BUFF
@@ -50,12 +55,14 @@ public class GameMgr : BaseManager<GameMgr>
         return player;
     }
     private GameObject sceneCanvas;
+    private bool hasBoss = false;
 
     public GameMgr()
     {
         bornPoint1 = GameObject.Find("BornPoint1").transform.position;
         bornPoint2 = GameObject.Find("BornPoint2").transform.position;
         enemyList = new List<Enemy>();
+        sceneItemList = new List<SceneItem>();
         sceneCanvas = GameObject.Find("SceneCanvas");
         MonoManager.GetInstance().AddUpdateListener(Update);
         state = GameState.GAME_STATE_END;
@@ -74,6 +81,7 @@ public class GameMgr : BaseManager<GameMgr>
         itemTimer = 1;
         state = GameState.GAME_STATE_START;
         UIManager.GetInstance().ShowPanel<HudPanel>("PanelHud", UILayer.MIDDLE);
+        ResetBossTime();
     }
 
     private void OnMainPlayer(GameObject playerObj)
@@ -95,15 +103,11 @@ public class GameMgr : BaseManager<GameMgr>
         //回收主玩家
         ObjectPool.GetInstance().intoPool(player.gameObject);
         //回收敌人
-        for (int i = 0; i < enemyList.Count; i++)
+        while (enemyList.Count > 0)
         {
-            Enemy enemy = enemyList[i];
-            if (enemy)
-            {
-                ObjectPool.GetInstance().intoPool(enemy.gameObject);
-                enemyList.Remove(enemy);
-                i--;
-            }
+            Enemy enemy = enemyList[0];
+            ObjectPool.GetInstance().intoPool(enemy.gameObject);
+            enemyList.Remove(enemy);
         }
         //回收物品
         if (blue != null)
@@ -115,6 +119,12 @@ public class GameMgr : BaseManager<GameMgr>
         {
             ObjectPool.GetInstance().intoPool(yellow.gameObject);
             yellow = null;
+        }
+        while (sceneItemList.Count > 0)
+        {
+            SceneItem item = sceneItemList[0];
+            ObjectPool.GetInstance().intoPool(item.gameObject);
+            sceneItemList.Remove(item);
         }
         UIManager.GetInstance().HidePanel("PanelHud");
         UIManager.GetInstance().ShowPanel<StartPanel>("PanelStart",UILayer.MIDDLE);
@@ -151,6 +161,16 @@ public class GameMgr : BaseManager<GameMgr>
             ObjectPool.GetInstance().intoPool(yellow.gameObject);
             yellow = null;
         }
+        for (int i = 0; i < sceneItemList.Count; i++)
+        {
+            SceneItem item = sceneItemList[i];
+            if (item && item.state == SceneItemState.STATE_INACTIVE)
+            {
+                ObjectPool.GetInstance().intoPool(item.gameObject);
+                sceneItemList.Remove(item);
+                i--;
+            }
+        }
         //敌人刷新
         timer -= Time.deltaTime;
         if (timer <= 0)
@@ -164,6 +184,13 @@ public class GameMgr : BaseManager<GameMgr>
         {
             itemTimer = Random.Range(5f, 10f);
             RandomSceneItem();
+        }
+        //BOSS
+        bossTimer -= Time.deltaTime;
+        if(!hasBoss && bossTimer <= 0)
+        {
+            CreateBoss();
+            hasBoss = true;
         }
     }
 
@@ -240,6 +267,17 @@ public class GameMgr : BaseManager<GameMgr>
         });
     }
 
+    private void CreateBoss()
+    {
+        ObjectPool.GetInstance().outPool("Prefabs/Boss", (GameObject obj) =>
+        {
+            Vector3 bornV = new Vector3(14.5f,0,7);
+            obj.transform.position = bornV;
+            Boss boss = obj.GetComponent<Boss>();
+            boss.init();
+            enemyList.Add(boss);
+        });
+    }
 
     private void CreateSceneItem(BuffType type)
     {
@@ -277,5 +315,16 @@ public class GameMgr : BaseManager<GameMgr>
                     break;
             }
         });
+    }
+
+    public void ResetBossTime()
+    {
+        bossTimer = 30;
+        hasBoss = false;
+    }
+
+    public float GetBossTime()
+    {
+        return bossTimer;
     }
 }

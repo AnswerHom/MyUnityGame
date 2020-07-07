@@ -6,6 +6,10 @@ using UnityEngine.UI;
 public enum CreatureState
 {
     /// <summary>
+    /// 出生
+    /// </summary>
+    STATE_BORN,
+    /// <summary>
     /// 活着
     /// </summary>
     STATE_ALIVE,

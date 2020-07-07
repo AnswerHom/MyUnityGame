@@ -7,6 +7,7 @@ public class HudPanel : BasePanel {
 
     private Text txtWeapon;
     private Text txtBuff;
+    private Text txtBoss;
     private Player player;
 
     protected override void Awake()
@@ -14,6 +15,8 @@ public class HudPanel : BasePanel {
         base.Awake();
         txtWeapon = transform.Find("TextWeapon").GetComponent<Text>();
         txtBuff = transform.Find("TextBuff").GetComponent<Text>();
+        txtBoss = transform.Find("TextBoss").GetComponent<Text>();
+        txtBoss.text = "";
         EventManager.GetInstance().AddEventListener(EventManager.EVENT_MAIN_PLAYER, OnMainPlayer);
         EventManager.GetInstance().AddEventListener<ShootType>(EventManager.EVENT_MAIN_PLAYER_CHANGE_WEAPON, OnMainPlayerChangeWeapon);
     }
@@ -55,6 +58,7 @@ public class HudPanel : BasePanel {
     // Update is called once per frame
     void Update () {
         txtBuff.text = "";
+        txtBoss.text = "";
         if (player.buffList.Count > 0)
         {
             for (int i = 0; i < player.buffList.Count; i++)
@@ -65,6 +69,14 @@ public class HudPanel : BasePanel {
                     txtBuff.text += buff.GetBuffName() + "剩余：" + buff.GetRemainTime() + "s\n"; 
                 }
             }
+        }
+        float bossTime = GameMgr.GetInstance().GetBossTime();
+        if (bossTime > 0)
+        {
+            txtBoss.text = "BOSS来袭倒计时：" + Mathf.Ceil(bossTime);
+        }else
+        {
+            txtBoss.text = "BOSS来袭...";
         }
 	}
 }

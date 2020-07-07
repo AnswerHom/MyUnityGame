@@ -9,13 +9,15 @@ public class Enemy : Creature {
     protected override void Awake()
     {
         base.Awake();
-        slider = transform.Find("Canvas/Slider").GetComponent<Slider>();
+        Transform sliderObj = transform.Find("Canvas/Slider");
+        if(sliderObj)
+            slider = sliderObj.GetComponent<Slider>();
+        render = skinObj.GetComponent<SkinnedMeshRenderer>();
     }
 
     // Use this for initialization
     protected override void Start () {
         base.Start();
-        render = skinObj.GetComponent<SkinnedMeshRenderer>();
     }
 	
 	// Update is called once per frame

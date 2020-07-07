@@ -24,7 +24,7 @@ public class SceneItem : MonoBehaviour {
 		
 	}
 
-    public void init()
+    public virtual void init()
     {
         state = SceneItemState.STATE_ACTIVE;
     }

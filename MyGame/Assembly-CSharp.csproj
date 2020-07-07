@@ -67,6 +67,9 @@
     <Compile Include="Assets\MobileInput\Scripts\VirtualInput.cs" />
     <Compile Include="Assets\Scripts\Base\BaseManager.cs" />
     <Compile Include="Assets\Scripts\BlueBattery.cs" />
+    <Compile Include="Assets\Scripts\Boss.cs" />
+    <Compile Include="Assets\Scripts\BossControl.cs" />
+    <Compile Include="Assets\Scripts\BossFire.cs" />
     <Compile Include="Assets\Scripts\Buff.cs" />
     <Compile Include="Assets\Scripts\CameraFollow.cs" />
     <Compile Include="Assets\Scripts\Creature.cs" />
@@ -96,6 +99,7 @@
     <Compile Include="Assets\Scripts\ZomControl.cs" />
     <None Include="Assets\Shaders\Rim Lit Bumped Specular.shader" />
     <None Include="Assets\Fonts\LuckiestGuy\LICENSE.txt" />
+    <None Include="Assets\LayaAir3D\LayaShader\LayaShader\LayaShuriKenParticle.shader" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>F:/UnityPro/MyGit/MyUnityGame/MyGame/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
